@@ -38,7 +38,7 @@ class _InputRegionState extends State<InputRegion> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.enabled == true) {
+    if (widget.enabled != false) {
       if (_lastRect != null) {
         WaylandShell.addInputRegion(_id, _lastRect!);
       }
