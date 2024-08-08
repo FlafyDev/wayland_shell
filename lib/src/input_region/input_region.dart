@@ -1,6 +1,5 @@
 import 'dart:math';
 
-
 import 'package:flutter/material.dart';
 import 'package:wayland_shell/src/wayland_shell_base.dart';
 import 'package:wayland_shell/src/global_rect/global_rect.dart';
@@ -25,7 +24,8 @@ class _InputRegionState extends State<InputRegion> {
 
   @override
   void initState() {
-    _id = (DateTime.now().millisecondsSinceEpoch & 0x7fff << 16) | Random().nextInt(0xffff);
+    _id = (DateTime.now().millisecondsSinceEpoch & 0x7fff << 16) |
+        Random().nextInt(0xffff);
 
     super.initState();
   }
@@ -49,7 +49,7 @@ class _InputRegionState extends State<InputRegion> {
     return GlobalRect(
       onChange: (rect) {
         _lastRect = rect;
-        if (widget.enabled == true) {
+        if (widget.enabled != false) {
           WaylandShell.addInputRegion(_id, rect);
         }
       },
@@ -57,4 +57,3 @@ class _InputRegionState extends State<InputRegion> {
     );
   }
 }
-
