@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class GlobalRect extends SingleChildRenderObjectWidget {
-  const GlobalRect({
+  GlobalRect({
     super.key,
     required super.child,
     this.painter,
@@ -11,12 +11,13 @@ class GlobalRect extends SingleChildRenderObjectWidget {
 
   final OffsetPainter? painter;
   final void Function(Rect)? onChange;
+  Rect? _lastRect;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return RenderGlobalRect(
       painter: painter,
-      onChange: onChange,
+      reportSize: _reportSize,
     );
   }
 
@@ -24,15 +25,21 @@ class GlobalRect extends SingleChildRenderObjectWidget {
   void updateRenderObject(BuildContext context, RenderGlobalRect renderObject) {
     renderObject
       ..painter = painter
-      ..onChange = onChange
+      ..reportSize = _reportSize
       ..markNeedsPaint();
+  }
+
+  void _reportSize(Rect rect) {
+    onChange?.call(rect);
   }
 }
 
-class RenderGlobalRect extends RenderBox with RenderObjectWithChildMixin<RenderBox> {
-  RenderGlobalRect({this.painter, this.onChange}) : super();
+class RenderGlobalRect extends RenderBox
+    with RenderObjectWithChildMixin<RenderBox> {
+  RenderGlobalRect({this.painter, this.reportSize}) : super();
   OffsetPainter? painter;
-  void Function(Rect)? onChange;
+  void Function(Rect)? reportSize;
+  Rect? _lastRect;
 
   @override
   void performLayout() {
@@ -49,7 +56,10 @@ class RenderGlobalRect extends RenderBox with RenderObjectWithChildMixin<RenderB
   void paint(PaintingContext context, Offset offset) {
     final globalRect = localToGlobal(Offset.zero) & size;
     painter?.paint(context.canvas, offset, globalRect);
-    onChange?.call(globalRect);
+    if (globalRect != _lastRect) {
+      _lastRect = globalRect;
+      reportSize?.call(globalRect);
+    }
     if (child != null) {
       context.paintChild(child!, offset);
     }
@@ -64,4 +74,3 @@ class RenderGlobalRect extends RenderBox with RenderObjectWithChildMixin<RenderB
 abstract class OffsetPainter {
   void paint(Canvas canvas, Offset offset, Rect globalRect);
 }
-
