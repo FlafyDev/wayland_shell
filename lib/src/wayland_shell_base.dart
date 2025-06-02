@@ -21,9 +21,9 @@ class WaylandShell {
     await _methodChannel.invokeMethod('clearInputRegions');
   }
 
-  static Future<void> setInput(bool recieve) async {
-    await _methodChannel.invokeMethod('set_input', {
-      'recieve': recieve,
+  static Future<void> setKeyboardInput(bool receive) async {
+    await _methodChannel.invokeMethod('setKeyboardInput', {
+      'receive': receive,
     });
   }
 }

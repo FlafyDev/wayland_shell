@@ -49,6 +49,14 @@ static void wayland_shell_plugin_handle_method_call(
     self->input_regions_manager->clear();
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  } else if (strcmp(method, "setKeyboardInput") == 0) {
+    bool receive = fl_value_get_bool(fl_value_lookup_string(args, "receive"));
+
+    gtk_layer_set_keyboard_interactivity(
+        self->window, receive ? GTK_LAYER_SHELL_KEYBOARD_MODE_EXCLUSIVE
+                        : GTK_LAYER_SHELL_KEYBOARD_MODE_NONE);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   } else {
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
   }
